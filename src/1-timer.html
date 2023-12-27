@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/javascript.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timer</title>
+    <script type="module" src="./js/1-timer.js" defer></script>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container timer-container">
+      <div class="input-and-button-container">
+        <input class="input flatpickr-input" type="text" id="datetime-picker" />
+        <button class="btn" type="button" id="start-btn" disabled>Start</button>
+      </div>
+
+      <ul class="timer">
+        <li class="timer-field">
+          <span class="value" id="days-span">00</span>
+          <span class="label">Days</span>
+        </li>
+        <li class="timer-field">
+          <span class="value" id="hours-span">00</span>
+          <span class="label">Hours</span>
+        </li>
+        <li class="timer-field">
+          <span class="value" id="minutes-span">00</span>
+          <span class="label">Minutes</span>
+        </li>
+        <li class="timer-field">
+          <span class="value" id="seconds-span">00</span>
+          <span class="label">Seconds</span>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

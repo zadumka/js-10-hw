@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/javascript.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timer</title>
+    <script type="module" src="./js/2-snackbar.js" defer></script>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container snackbar-container">
+      <form class="form" id="form">
+        <label class="delay">
+          <span class="delay-label">
+            Delay (ms)
+          </span>
+          <input class="input delay-input" type="number" name="delay" required />
+        </label>
+
+        <fieldset class="input state-fieldset">
+          <legend>State</legend>
+          <span class="two-labels">
+            <label>
+              <input type="radio" name="state" value="fulfilled" required />
+              Fulfilled
+            </label>
+            <label>
+              <input type="radio" name="state" value="rejected" required />
+              Rejected
+            </label>
+          </span>
+        </fieldset>
+
+        <button class="btn create-btn" type="submit">Create notification</button>
+      </form>
+    </div>
+  </body>
+</html>

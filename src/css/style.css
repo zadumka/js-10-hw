@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+}
+.container {
+  padding: 50px;
+}
+
+/* Timer */
+.timer-container {
+  width: 446px;
+}
+.input-and-button-container {
+  display: flex;
+}
+.input {
+  border-radius: 4px;
+  border: 1px solid #808080;
+  padding: 8px 16px;
+}
+.flatpickr-input {
+  flex: 1;
+  margin-right: 8px;
+}
+.btn {
+  color: white;
+  background-color: #4e75ff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 16px;
+  transition: 100ms linear;
+}
+.btn:hover,
+.btn:focus {
+  background-color: #6c8cff;
+}
+.btn:disabled {
+  color: #989898;
+  background-color: #cfcfcf;
+}
+.timer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  list-style-type: none;
+}
+.value,
+.label {
+  display: block;
+  text-align: center;
+}
+.value {
+  font-size: 40px;
+}
+.label {
+  font-size: 16px;
+}
+/* /Timer */
+
+/* Snackbar */
+.snackbar-container {
+  width: 460px;
+}
+.delay {
+  display: block;
+  margin-bottom: 16px;
+}
+.delay-input {
+  width: 100%;
+}
+.delay-label {
+  display: block;
+  margin-bottom: 8px;
+}
+.state-fieldset {
+  display: block;
+  margin-bottom: 24px;
+  padding: 18px 28px 12px;
+}
+.two-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 20px;
+}
+.create-btn {
+  width: 100%;
+}
+/* /Snackbar */
