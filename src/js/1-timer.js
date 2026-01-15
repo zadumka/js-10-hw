@@ -1,20 +1,24 @@
+// Описаний в документації
 import flatpickr from "flatpickr";
+// Додатковий імпорт стилів
 import "flatpickr/dist/flatpickr.min.css";
+
+// Описаний у документації
 import iziToast from "izitoast";
+// Додатковий імпорт стилів
 import "izitoast/dist/css/iziToast.min.css";
 
-const refs = {
-  datetime: document.querySelector("#datetime-picker"),
-  btn: document.querySelector('.timer-btn'),
-  daysField: document.querySelector('.field:nth-child(1) .value'),
-  hoursField: document.querySelector('.field:nth-child(2) .value'),
-  minutesField: document.querySelector('.field:nth-child(3) .value'),
-  secondsField: document.querySelector('.field:last-child .value')
-}
 
-document.addEventListener('DOMContentLoaded', e => {
-  refs.btn.classList.add('inactive');
-});
+const input = document.querySelector('#datetime-picker');
+const startButton = document.querySelector('[data-start]');
+const dataDays = document.querySelector('[data-days]');
+const dataHours = document.querySelector('[data-hours]');
+const dataMinutes = document.querySelector('[data-minutes]');
+const dataSeconds = document.querySelector('[data-seconds]');
+
+let userSelectedDate = null;
+let timerId = null;
+startButton.disabled = true;
 
 const options = {
   enableTime: true,
@@ -23,74 +27,75 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     const selectedDate = selectedDates[0];
-    if (selectedDate <= new Date()) {
-      refs.btn.classList.add('inactive');
-      refs.btn.disabled = true;           
-      iziToast.error({message: "Please choose a date in the future", position:`topRight` });
+    const currentDate = new Date();
+    if (selectedDate <= currentDate) {
+      iziToast.error({
+        title: 'Error',
+        message: 'Please choose a date in the future',
+        position: 'topRight',
+      });
+      startButton.disabled = true;
     } else {
-      refs.btn.classList.remove('inactive');
-      refs.btn.disabled = false;
+      userSelectedDate = selectedDate;
+      startButton.disabled = false;
     }
   },
 };
 
+flatpickr(input, options);
 
-const picker = flatpickr(refs.datetime, options);
+startButton.addEventListener('click', () => {
+  startButton.disabled = true;
+  input.disabled = true;
+  timerId = setInterval(() => {
+    const now = new Date();
+    const diff = userSelectedDate - now;
+    if (diff <= 0) {
+      clearInterval(timerId);
+      updateTime({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      iziToast.success({
+        title: 'Done',
+        message: 'Timer finished!',
+        position: 'topRight',
+      });
+      return;
+    }
+    const time = convertMs(diff);
+    updateTime(time);
+  }, 1000);
+});
 
-  const timer = {
-    isActive: false,
-    intervalID:null,
-    start() {
-      if (this.isActive) return;
-      this.isActive = true;
-      refs.datetime.disabled = true;
-      refs.btn.classList.add('inactive');
-      this.intervalID = setInterval(() => {
-      const endDate = picker.selectedDates[0];
-      const date = new Date();
-      const diff = endDate - date;
-      convertMs(diff);
-      addLeadingZero()
-      if (diff < 1000) {
-        clearInterval(this.intervalID);
-        this.isActive = false;
-        refs.datetime.disabled = false;
-        refs.btn.classList.remove('inactive');
-      } 
-    
-    }, 1000)
-    },
-
+function updateTime({ days, hours, minutes, seconds }) {
+  dataDays.textContent = addLeadingZero(days);
+  dataHours.textContent = addLeadingZero(hours);
+  dataMinutes.textContent = addLeadingZero(minutes);
+  dataSeconds.textContent = addLeadingZero(seconds);
 }
 
-
-
-refs.btn.addEventListener('click', () => {
-  timer.start();
-})
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
 
 function convertMs(ms) {
-
+  // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
-
+  // Remaining days
   const days = Math.floor(ms / day);
-  refs.daysField.textContent = days;
+  // Remaining hours
   const hours = Math.floor((ms % day) / hour);
-  refs.hoursField.textContent = hours;
+  // Remaining minutes
   const minutes = Math.floor(((ms % day) % hour) / minute);
-  refs.minutesField.textContent = minutes;
+  // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-  refs.secondsField.textContent = seconds;
+
   return { days, hours, minutes, seconds };
 }
 
-function addLeadingZero() {
-  refs.daysField.textContent = refs.daysField.textContent.padStart(2, '0');
-  refs.hoursField.textContent = refs.hoursField.textContent.padStart(2, '0');
-  refs.minutesField.textContent = refs.minutesField.textContent.padStart(2, '0');
-  refs.secondsField.textContent = refs.secondsField.textContent.padStart(2, '0');
-}
+console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
+console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
+console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
