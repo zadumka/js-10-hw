@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/js-hw-10/",,
     "preview": "vite preview",
     "rebuild": "rm -r dist && vite build"
   },
