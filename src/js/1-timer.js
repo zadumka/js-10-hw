@@ -3,108 +3,94 @@ import "flatpickr/dist/flatpickr.min.css";
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
-const datetimePicker = document.getElementById("datetime-picker");
-const startBtn = document.getElementById("start-btn");
+const refs = {
+  datetime: document.querySelector("#datetime-picker"),
+  btn: document.querySelector('.timer-btn'),
+  daysField: document.querySelector('.field:nth-child(1) .value'),
+  hoursField: document.querySelector('.field:nth-child(2) .value'),
+  minutesField: document.querySelector('.field:nth-child(3) .value'),
+  secondsField: document.querySelector('.field:last-child .value')
+}
 
-const daysSpan = document.getElementById("days-span");
-const hoursSpan = document.getElementById("hours-span");
-const minutesSpan = document.getElementById("minutes-span");
-const secondsSpan = document.getElementById("seconds-span");
+document.addEventListener('DOMContentLoaded', e => {
+  refs.btn.classList.add('inactive');
+});
 
-const flatpickrOptions = {
+const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose: validateDate,
+  onClose(selectedDates) {
+    const selectedDate = selectedDates[0];
+    if (selectedDate <= new Date()) {
+      refs.btn.classList.add('inactive');
+      refs.btn.disabled = true;           
+      iziToast.error({message: "Please choose a date in the future", position:`topRight` });
+    } else {
+      refs.btn.classList.remove('inactive');
+      refs.btn.disabled = false;
+    }
+  },
 };
 
-let userSelectedDate = null;
 
-function validateDate(selectedDates) {
-  userSelectedDate = selectedDates[0];
+const picker = flatpickr(refs.datetime, options);
 
-  if (userSelectedDate) {
-    const isDataValid = new Date() < userSelectedDate;
-    startBtn.disabled = !isDataValid;
+  const timer = {
+    isActive: false,
+    intervalID:null,
+    start() {
+      if (this.isActive) return;
+      this.isActive = true;
+      refs.datetime.disabled = true;
+      refs.btn.classList.add('inactive');
+      this.intervalID = setInterval(() => {
+      const endDate = picker.selectedDates[0];
+      const date = new Date();
+      const diff = endDate - date;
+      convertMs(diff);
+      addLeadingZero()
+      if (diff < 1000) {
+        clearInterval(this.intervalID);
+        this.isActive = false;
+        refs.datetime.disabled = false;
+        refs.btn.classList.remove('inactive');
+      } 
+    
+    }, 1000)
+    },
 
-    if (!isDataValid) {
-      iziToast.error({
-        title: "Error",
-        message: "Please choose a date in the future",
-        position: "topRight",
-        iconUrl: "/close-message.svg",
-        theme: "dark",
-        color: "#fff",
-        backgroundColor: "#EF4040",
-        messageColor: "#fff",
-        titleColor: "#fff",
-        iconColor: "#fff",
-      });
-    }
-  }
 }
 
-flatpickr(datetimePicker, flatpickrOptions);
 
-let timerIntervalId = null;
 
-startBtn.addEventListener("click", startTimer);
-
-function startTimer() {
-  if (timerIntervalId) stopTimer();
-  console.log(timerIntervalId);
-  startBtn.disabled = true;
-
-  const timeLeftFloor = userSelectedDate - new Date();
-  let timeLeft = Math.floor(timeLeftFloor / 1000) * 1000;
-
-  if (timeLeft < 0) return;
-  setSpans(timeLeft);
-
-  const interval = 1000;
-  timerIntervalId = setInterval(() => {
-    timeLeft -= interval;
-    setSpans(timeLeft);
-    console.log(timeLeft);
-    if (timeLeft === 0) {
-      stopTimer();
-      return;
-    }
-  }, interval);
-
-  function stopTimer() {
-    clearInterval(timerIntervalId);
-  }
-}
+refs.btn.addEventListener('click', () => {
+  timer.start();
+})
 
 function convertMs(ms) {
-  // Number of milliseconds per unit of time
+
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
   const day = hour * 24;
 
-  // Remaining days
-  const days = Math.floor(ms / day);
-  // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
+  const days = Math.floor(ms / day);
+  refs.daysField.textContent = days;
+  const hours = Math.floor((ms % day) / hour);
+  refs.hoursField.textContent = hours;
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  refs.minutesField.textContent = minutes;
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  refs.secondsField.textContent = seconds;
   return { days, hours, minutes, seconds };
 }
 
-function setSpans(timeLeft) {
-  const { days, hours, minutes, seconds } = convertMs(timeLeft);
-  daysSpan.textContent = addZeroIfNeeded(days);
-  hoursSpan.textContent = addZeroIfNeeded(hours);
-  minutesSpan.textContent = addZeroIfNeeded(minutes);
-  secondsSpan.textContent = addZeroIfNeeded(seconds);
-}
-
-function addZeroIfNeeded(number) {
-  return (number < 10 ? "0" : "") + String(number);
+function addLeadingZero() {
+  refs.daysField.textContent = refs.daysField.textContent.padStart(2, '0');
+  refs.hoursField.textContent = refs.hoursField.textContent.padStart(2, '0');
+  refs.minutesField.textContent = refs.minutesField.textContent.padStart(2, '0');
+  refs.secondsField.textContent = refs.secondsField.textContent.padStart(2, '0');
 }
